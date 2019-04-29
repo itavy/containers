@@ -1,0 +1,6 @@
+[itavy]
+name=itavy Fedora $releasever
+baseurl=http://rpm.itavy.com/fedora/$releasever
+enabled=1
+gpgcheck=1
+gpgkey=http://rpm.itavy.com/gpg

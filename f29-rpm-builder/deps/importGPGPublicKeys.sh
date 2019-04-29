@@ -19,4 +19,5 @@ fi
 GPG_PUBLIC_KEYS=$(find ${gpg_public_keys_import_path} -name ${gpg_public_keys_import_pattern})
 for GPG_KEY in ${GPG_PUBLIC_KEYS}; do
   /usr/bin/gpg2 --import ${GPG_KEY}
+  sudo rpm --import ${GPG_KEY}
 done

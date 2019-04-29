@@ -1,7 +1,16 @@
-REQUIRED_PACKAGES ?= rpm-build redhat-rpm-config gcc sudo pinentry
+REQUIRED_PACKAGES ?= rpm-build redhat-rpm-config gcc sudo pinentry rpm-sign createrepo dnf-plugins-core
 
 .PHONY: all
-all: | install-packages add-mock-user configure-sudo setup-rpm-env add-various-helpers setup-entry-point clean
+all: | add-custom-repos refresh-repo-metadata install-packages add-mock-user \
+	configure-sudo setup-rpm-env add-various-helpers setup-entry-point clean
+
+.PHONY: add-custom-repos
+add-custom-repos:
+	mv /tmp/deps/itavy.repo /etc/yum.repos.d/itavy.repo
+
+.PHONY: refresh-repo-metadata
+refresh-repo-metadata:
+	dnf makecache -y
 
 .PHONY: install-packages
 install-packages:
@@ -11,9 +20,10 @@ install-packages:
 .PHONY: add-mock-user
 add-mock-user:
 	groupadd --gid 1000 mock
+	groupadd --gid 1001 mockbuild
 	useradd \
     --uid 1000 \
-    --groups wheel \
+    --groups wheel,mockbuild \
     --gid 1000 \
     --shell /bin/bash \
     --comment "Fedora 29 Mock Build user" \
@@ -40,7 +50,7 @@ setup-entry-point:
 	chmod +x /entrypoint.sh
 
 .PHONY: add-various-helpers
-add-various-helpers: add-import-gpg-master-key add-import-gpg-public-keys
+add-various-helpers: add-import-gpg-master-key add-import-gpg-public-keys add-buildHelpers
 
 .PHONY: add-import-gpg-master-key
 add-import-gpg-master-key:
@@ -51,6 +61,13 @@ add-import-gpg-master-key:
 add-import-gpg-public-keys:
 	mv /tmp/deps/importGPGPublicKeys.sh /usr/local/bin/importGPGPublicKeys.sh
 	chmod +x /usr/local/bin/importGPGPublicKeys.sh
+
+.PHONY: add-buildHelpers
+add-buildHelpers:
+	mv /tmp/deps/updateRPMRepo.sh /usr/local/bin/updateRPMRepo.sh
+	chmod +x /usr/local/bin/updateRPMRepo.sh
+	mv /tmp/deps/installRequiredBuildDeps.sh /usr/local/bin/installRequiredBuildDeps.sh
+	chmod +x /usr/local/bin/installRequiredBuildDeps.sh
 
 .PHONY: clean
 clean:

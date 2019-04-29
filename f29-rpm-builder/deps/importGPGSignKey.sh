@@ -20,5 +20,8 @@ cat  << EOF >> ${HOME}/.rpmmacros
 %_gpg_path ${HOME}/.gnupg
 %_gpg_name $user_id
 %_gpgbin /usr/bin/gpg2
-%__gpg_sign_cmd %{__gpg} gpg --force-v3-sigs --batch --verbose --no-armor --passphrase-fd 3 --no-secmem-warning -u "%{_gpg_name}" -sbo %{__signature_filename} --digest-algo sha256 %{__plaintext_filename}'
 EOF
+tmp_pub_key=/tmp/pub.key
+gpg2 --export -a "${user_id}" > ${tmp_pub_key}
+sudo rpm --import ${tmp_pub_key}
+rm -rf ${tmp_pub_key}
