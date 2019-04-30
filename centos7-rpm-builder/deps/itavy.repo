@@ -1,0 +1,6 @@
+[itavy]
+name=itavy Centos $releasever
+baseurl=http://rpm.itavy.com/centos/$releasever
+enabled=1
+gpgcheck=1
+gpgkey=http://rpm.itavy.com/gpg
